@@ -4,4 +4,89 @@ They are not meant to be run directly as a standalone program using the go run c
 Instead, they are executed by a different command: go test.
 The error message go: cannot run *_test.go files is Go's way of telling you, "Hey, this is a test file, you should use the test runner for this, not the regular program runner."
 
-2. 
+2. OBSERVATIONS:
+
+a. package Go-projects was automatically added. Why?
+- ide assumed you created a new .go file inside Go-projects directory -> assumed you want your package to be named after dir. -> added package Go-projects to top
+
+NOTE : Go has strict rules for package names
+-> hyphens, spaces not allowed
+-> short, lowercase, descriptive allowed
+
+b. Error when adding func main() to the second file. Why?
+
+NOTE : All .go files within the same directory that start with package main are combined by the compiler into a single program.
+
+A package can only have one of anything with a given name.
+
+You already have func main() in your main.go file. When you try to add another func main() in varConstDataTypes.go, you are essentially telling the compiler:
+
+"Okay, for this program, I have two different starting points. Start here... and also start here at the same time."
+
+The compiler doesn't know which main function is the real entry point, so it gives you an error, which is likely something like:
+# command-line-arguments
+.\varConstDataTypes.go:3:6: main redeclared in this package
+        previous declaration at .\main.go:5:6
+
+
+Solutions:
+
+a. one executable file, multiple source files
+-> keep package main in both files
+-> keep func main() (ie the entry point to program) in only one file
+-> create functions in other files that func main() can call from main.go
+
+Example:
+
+main.go
+
+Go
+
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello from main.go!")
+    
+    // You can now call the function from the other file
+    // as if it were in this same file!
+    demonstrateVariables() 
+}
+varConstDataTypes.go (Notice NO func main here)
+
+Go
+
+package main
+
+import "fmt"
+
+// This is just a regular function, not the special 'main' one.
+func demonstrateVariables() {
+    name := "Gopher"
+    version := 1.18
+    fmt.Printf("%v is learning Go version %v\n", name, version)
+}
+
+b. create two separate programs
+-> if source files are two completely different runnable programs -> must be in different directories
+
+You would structure your project like this:
+
+/Go-projects
+├── /hello
+│   └── main.go        // Contains 'package main' and 'func main' for hello
+└── /variables
+    └── main.go        // Contains 'package main' and 'func main' for variables
+In this structure, /hello is a complete, self-contained program. /variables is another, completely separate program. You would run them by navigating into their specific directories:
+cd Go-projects/hello and then go run main.go
+cd Go-projects/variables and then go run main.
+
+
+###
+IMPORTANT:
+- let's say i went for Solution a
+
+i have to take care that the functions being in different files can only be run when they are called which is only possible through func main() and that is unique to only one source file
+
+if they are not called from inside func main() , it won't necessarily cause any compilation error but a warning will still be raised by the Go tools( linters of Go tool chain eg go vet) that this certain function is unused
