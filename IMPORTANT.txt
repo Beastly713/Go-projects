@@ -1,0 +1,7 @@
+1. In Go, any file that ends with _test.go is considered a test file.
+These files are special and are meant to contain test code that verifies your main program works correctly.
+They are not meant to be run directly as a standalone program using the go run command.
+Instead, they are executed by a different command: go test.
+The error message go: cannot run *_test.go files is Go's way of telling you, "Hey, this is a test file, you should use the test runner for this, not the regular program runner."
+
+2. 
