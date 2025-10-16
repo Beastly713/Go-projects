@@ -8,6 +8,7 @@ func main() {
     demoPrintln()
     demoPrintf()
     demoIfElse()
+    demoDivide()
 }
 
 /*
